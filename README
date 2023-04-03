@@ -3,3 +3,64 @@
 +-----------+
 
   Snowflake algorithm implementation in OCaml.
+
+  The MIT License (MIT)
+
+  Copyright (c) 2023 Muqiu Han
+  
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in all
+  copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+  SOFTWARE.
+
+
+o- What is snowflake algorithm
+
+  Snowflake is an open source distributed ID generation algorithm based on Twitter.
+  It divides 64-bit bits into several parts in the way of namespace partition,
+  each part represents different meanings.
+
+o- How to use
+
+  Very simple implementation, only a hundred lines, just need to get the usage through 
+  
+  o- test/test_snowflake.ml:
+
+    let worker = Snowflake.new_worker ~data_center_id:1 ~worker_id:2 ~sequence:0 in
+    let id_list = List.init 100 (fun _ -> worker#generate ()) in
+    List.iter
+      (fun id ->
+        if 1
+           <> (List.filter (fun other_id -> Snowflake.equal other_id id) id_list
+               |> List.length)
+        then print_endline "Failure")
+      id_list;
+    print_endline "Success"
+  
+  o- and lib/snowflake.mli:
+
+    module Algorithm : sig
+      class id_worker : object end
+    end
+
+    val new_worker
+      :  data_center_id:int
+      -> worker_id:int
+      -> sequence:int
+      -> Algorithm.id_worker
+
+    val equal : int64 -> int64 -> bool
+    val to_string : int64 -> string
